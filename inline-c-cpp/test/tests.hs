@@ -83,6 +83,17 @@ main = Hspec.hspec $ do
           std::cout << (*$(std::vector<int>* pt))[0] << std::endl;
         } |]
 
+    Hspec.it "Template with pointers" $ do
+      pt <- [C.block| std::vector<int*>* {
+          return new std::vector<int*>();
+        } |] :: IO (Ptr (StdVector.CStdVector (Ptr C.CInt)))
+      [C.block| void {
+          int *a = new int;
+          *a = 100;
+          $(std::vector<int*>* pt)->push_back(a);
+          std::cout << *((*$(std::vector<int*>* pt))[0]) << std::endl;
+        } |]
+
     Hspec.it "Template + Namespace" $ do
       pt <- [C.block| std::vector<Test::Test>* {
           return new std::vector<Test::Test>();
